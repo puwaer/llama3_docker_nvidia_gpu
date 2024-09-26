@@ -23,7 +23,6 @@ RUN pip3 install -U accelerate
 
 # スクリプトファイルをコピー
 COPY /src/huggingface_login.py /app/
-COPY /src/your_llama3_script.py /app/
 COPY /src/llama3_script.py /app/
 
 # LLaMA3 の実行コマンド
