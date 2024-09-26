@@ -62,44 +62,61 @@ This format improves readability, ensures clarity for users, and provides step-b
 
 
 
+以下は日本語のREADMEです。
+
+---
+
 # NVIDIA GPU上でLLaMA 3をDockerで動作させる
 
 このプログラムは、NVIDIA GPUを使用してMeta社のLLaMA 3モデルをDocker上で動作させるためのものです。
 
-## 事前準備
+## 前提条件
 
 1. **Meta社からLLaMA 3の利用申請を行う**  
-   Metaの公式サイトからLLaMA 3モデルの利用申請を行ってください。  
+   Meta社の公式サイトからLLaMA 3モデルの利用申請を行ってください。  
    [Meta LLaMA 3](https://ai.meta.com/resources/models-and-libraries/llama-downloads/)
 
 2. **Hugging Faceのトークンを発行する**  
    モデルにアクセスするために、Hugging Faceからトークンを発行する必要があります。  
-   詳細な手順は、以下の記事を参考にしてください。  
+   詳細な手順は以下の記事を参照してください。  
    [Hugging Faceトークンの発行方法](https://zenn.dev/shibayan/articles/b8a91a1c175685)
 
-## 使用方法
+## 使い方
 
-### `llama3_script.py` の設定
+### `llama3_script.py`の修正
 
 1. **Hugging Faceトークンを設定する**  
-   `llama3_script.py`内の `login(token='your_access_token')` に、発行したHugging Faceのトークンを設定してください。
+   `llama3_script.py`の `login(token='your_access_token')` に、発行したHugging Faceトークンを設定してください。
 
-2. **入力プロンプトの設定**  
-   `llama3_script.py`内の `prompt` 変数に、LLaMAモデルに入力するテキストを設定します。例：  
+2. **入力プロンプトを設定する**  
+   `llama3_script.py`内の `prompt` を修正し、LLaMAモデルに入力するテキストを設定します。例：  
    ```python
    prompt = "大規模言語モデルについて簡単に説明してください。"
    ```
 
 ### Dockerコマンド
 
-1. **Dockerイメージの作成**  
-   以下のコマンドでDockerイメージを作成します：
+1. **Dockerイメージを作成する**  
+   以下のコマンドを実行して、Dockerイメージをビルドします。
    ```bash
    docker image build -t llama3_7b:latest .
    ```
 
-2. **Dockerコンテナの作成**  
-   以下のコマンドでGPUを使用してコンテナを作成します：
+2. **Dockerコンテナを作成する**  
+   以下のコマンドを実行して、GPU対応のDockerコンテナを作成します。
    ```bash
-   docker container run -it --g
+   docker container run -it --gpus all --name llama3_7b -v $(pwd)/src:/app llama3_7b:latest
+   ```
 
+3. **Dockerコンテナを起動する**  
+   コンテナが既に作成されている場合、以下のコマンドでコンテナを起動します。
+   ```bash
+   docker start -i llama3_7b
+   ```
+
+4. **コンテナ内で`llama3_script.py`を実行する**  
+   コンテナ内で`llama3_script.py`を実行するには、以下のコマンドを使用します。
+   ```bash
+   python3 llama3_script.py
+   ```
+   スクリプトを初めて実行すると、LLaMA-8Bモデルがダウンロードされ、推論が行われます。2回目以降の実行時にはダウンロードは行われず、推論のみが行われます。
